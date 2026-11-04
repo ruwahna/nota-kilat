@@ -13,7 +13,7 @@ const plusDays = (d,n) => { const x=new Date(d); x.setDate(x.getDate()+n); retur
 const makeNo = (type, seq) => { const d=new Date(); return `${PREFIX[type]}/${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(seq).padStart(3,"0")}`; };
 
 const SAMPLE = () => ({
-  type:"faktur", theme:"zamrud", style:"classic", seq:1,
+  type:"faktur", theme:"zamrud", style:"classic", size:"auto", seq:1,
   sName:"Contoh: Studio Ronin Kreatif", sAddr:"Jl. Kemang Raya No. 12\nJakarta Selatan 12730", sPhone:"0812-3456-7890", sEmail:"halo@contoh.id", sLogo:"",
   bName:"PT Maju Bersama", bAddr:"Jl. Sudirman Kav. 21, Jakarta Pusat",
   no:makeNo("faktur",1), date:today(), due:plusDays(today(),14), city:"Jakarta",
@@ -65,10 +65,12 @@ const FIELDS = ["sName","sAddr","sPhone","sEmail","bName","bAddr","no","date","d
 function fillForm(){
   FIELDS.forEach(k => { $(k).value = S[k] ?? ""; });
   $("city").value = S.city || ""; $("city2").value = S.city || "";
+  if ($("docSize")) $("docSize").value = S.size || "auto";
   renderItems(); syncChrome();
 }
 FIELDS.forEach(k => $(k).addEventListener("input", e => { S[k]=e.target.value; update(); }));
 ["city","city2"].forEach(k => $(k).addEventListener("input", e => { S.city=e.target.value; $(k==="city"?"city2":"city").value=S.city; update(); }));
+$("docSize")?.addEventListener("change", e => { S.size = e.target.value; update(); });
 
 $("sLogo").addEventListener("change", e => {
   const file = e.target.files[0]; if (!file) return;
@@ -156,7 +158,8 @@ function renderKuitansi(c){
     <div class="k">Untuk pembayaran</div><div class="v">${esc(S.purpose||"-")}</div>
     <div class="k">Metode</div><div class="v">${esc(S.method)}</div>
   </div>
-  <div class="foot"><div><div class="kw-amt num"><span>Rp</span>${Math.round(c.total).toLocaleString("id-ID")},-</div>${S.notes?`<div class="notes" style="margin-top:14px">${esc(S.notes)}</div>`:""}</div>${signHTML()}</div>`;
+  <div class="foot"><div><div class="kw-amt num"><span>Rp</span>${Math.round(c.total).toLocaleString("id-ID")},-</div>${S.notes?`<div class="notes" style="margin-top:14px">${esc(S.notes)}</div>`:""}</div>${signHTML()}</div>
+  <div class="cut-guide"><span>✂</span> - - - - - - - - - - - - - - - - - - - - - - Gunting / Sobek di sini - - - - - - - - - - - - - - - - - - - - - - <span>✂</span></div>`;
 }
 
 function renderNota(c){
@@ -170,14 +173,16 @@ function renderNota(c){
     <div class="grand"><span>Total</span><span>${rp(c.total)}</span></div>
   </div>
   <div class="words" style="font-size:11.5px">${terbilang(c.total)}</div>
-  <div class="foot">${S.notes?`<div class="notes">${esc(S.notes)}</div>`:""}${signHTML()}</div>`;
+  <div class="foot">${S.notes?`<div class="notes">${esc(S.notes)}</div>`:""}${signHTML()}</div>
+  <div class="cut-guide"><span>✂</span> - - - - - - - - - - Sobek di sini - - - - - - - - - - <span>✂</span></div>`;
 }
 
 function update(){
   const c = calc();
   const th = THEMES.find(t=>t.id===S.theme) || THEMES[0];
   const html = S.type==="kuitansi" ? renderKuitansi(c) : S.type==="nota" ? renderNota(c) : renderFaktur(c);
-  $("stage").innerHTML = `<article class="paper ${S.type} s-${S.style}" style="--accent:${th.a};--tint:${th.t}">${html}</article>`;
+  const sizeClass = S.size === "full" ? "size-full" : "size-auto";
+  $("stage").innerHTML = `<article class="paper ${S.type} s-${S.style} ${sizeClass}" style="--accent:${th.a};--tint:${th.t}">${html}</article>`;
   $("totalLabel").textContent = rp(c.total);
   save(); fit();
 }

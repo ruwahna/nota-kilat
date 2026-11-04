@@ -30,13 +30,19 @@
     </div>
     <form class="form mobile-visible" id="f" autocomplete="off">
       <section class="card">
-        <h2>Tampilan</h2>
+        <h2>Tampilan & Ukuran</h2>
         <div class="swatches" id="swatches"></div>
         <div class="styles" role="group" aria-label="Gaya dokumen" id="styles">
           <button type="button" class="btn" data-style="classic">Klasik</button>
           <button type="button" class="btn" data-style="bold">Tegas</button>
           <button type="button" class="btn" data-style="minimal">Minimalis</button>
         </div>
+        <label>Ukuran Lembar Dokumen
+          <select id="docSize">
+            <option value="auto">✨ Pas Sesuai Kebutuhan (Kompak / Hemat Kertas)</option>
+            <option value="full">📑 Format Lembar Penuh (A4)</option>
+          </select>
+        </label>
       </section>
 
       <section class="card">
