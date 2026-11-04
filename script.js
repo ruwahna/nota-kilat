@@ -219,6 +219,7 @@ $("resetBtn").addEventListener("click", e => {
 
 /* Print action */
 function doPrint() {
+  saveToHistory(true);
   window.print();
 }
 const p1 = $("printBtn");
@@ -226,7 +227,186 @@ if (p1) p1.addEventListener("click", doPrint);
 const p2 = $("printBtn2");
 if (p2) p2.addEventListener("click", doPrint);
 
-fillForm(); update();
+/* ---------- REKAP & RIWAYAT SYSTEM ---------- */
+let HISTORY = [];
+try {
+  HISTORY = JSON.parse(localStorage.getItem("notakilat_history") || "[]");
+  if (!Array.isArray(HISTORY)) HISTORY = [];
+} catch(e) { HISTORY = []; }
+
+let currentHistoryFilter = "all";
+
+function saveHistoryStorage() {
+  try { localStorage.setItem("notakilat_history", JSON.stringify(HISTORY)); } catch(e) {}
+}
+
+function saveToHistory(silent = false) {
+  const c = calc();
+  const summaryName = S.bName?.trim() || "Tanpa Nama";
+  const desc = S.type === "kuitansi" 
+    ? (S.purpose || "-") 
+    : (S.items && S.items.map(it=>it.d).filter(Boolean).join(", ")) || "-";
+  
+  const record = {
+    id: Date.now().toString(),
+    savedAt: new Date().toISOString(),
+    type: S.type,
+    no: S.no || "-",
+    date: S.date || today(),
+    buyer: summaryName,
+    desc: desc,
+    total: c.total,
+    payload: JSON.parse(JSON.stringify(S))
+  };
+
+  // Jika no dokumen sudah ada di history, perbarui
+  const existingIdx = HISTORY.findIndex(h => h.no && h.no === record.no);
+  if (existingIdx >= 0) {
+    HISTORY[existingIdx] = record;
+  } else {
+    HISTORY.unshift(record);
+  }
+
+  saveHistoryStorage();
+  renderHistory();
+  if (!silent) toast("✅ Dokumen berhasil dicatat ke Rekap & Riwayat!");
+}
+
+$("saveHistoryBtn")?.addEventListener("click", () => saveToHistory(false));
+
+function renderHistory() {
+  // Update Statistik
+  const totalCount = HISTORY.length;
+  const kwCount = HISTORY.filter(h => h.type === "kuitansi").length;
+  const notaCount = HISTORY.filter(h => h.type === "nota").length;
+  const totalNominal = HISTORY.reduce((acc, h) => acc + (Number(h.total) || 0), 0);
+
+  if ($("statTotalCount")) $("statTotalCount").textContent = totalCount;
+  if ($("statKwCount")) $("statKwCount").textContent = kwCount;
+  if ($("statNotaCount")) $("statNotaCount").textContent = notaCount;
+  if ($("statTotalNominal")) $("statTotalNominal").textContent = rp(totalNominal);
+
+  // Filter data
+  const filtered = currentHistoryFilter === "all" 
+    ? HISTORY 
+    : HISTORY.filter(h => h.type === currentHistoryFilter);
+
+  const tbody = $("historyBody");
+  if (!tbody) return;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">Belum ada riwayat dokumen yang tercatat. Buat dan simpan dokumen untuk melihat rekapannya di sini.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((h, i) => {
+    const badgeClass = h.type === "kuitansi" ? "badge-kuitansi" : h.type === "nota" ? "badge-nota" : "badge-faktur";
+    const typeLabel = h.type === "kuitansi" ? "Kuitansi" : h.type === "nota" ? "Nota" : "Faktur";
+    return `<tr>
+      <td class="num">${i + 1}</td>
+      <td class="num">${tgl(h.date)}</td>
+      <td class="num" style="font-weight:600">${esc(h.no)}</td>
+      <td><span class="badge ${badgeClass}">${typeLabel}</span></td>
+      <td><b>${esc(h.buyer)}</b><br><small style="color:var(--muted)">${esc(h.desc)}</small></td>
+      <td class="num" style="text-align:right;font-weight:700">${rp(h.total)}</td>
+      <td>
+        <div class="action-cell">
+          <button type="button" data-load-id="${h.id}" title="Muat ke formulir">Buka</button>
+          <button type="button" class="btn-del" data-del-id="${h.id}" title="Hapus dari riwayat">Hapus</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+// Event delegation untuk Buka & Hapus baris riwayat
+$("historyBody")?.addEventListener("click", e => {
+  const loadId = e.target.dataset.loadId;
+  const delId = e.target.dataset.delId;
+
+  if (loadId) {
+    const item = HISTORY.find(h => h.id === loadId);
+    if (!item) return;
+    S = JSON.parse(JSON.stringify(item.payload));
+    fillForm();
+    update();
+    toast(`📂 Dokumen ${item.no} (${item.buyer}) dimuat ke formulir.`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  if (delId) {
+    if (confirm("Hapus catatan dokumen ini dari riwayat?")) {
+      HISTORY = HISTORY.filter(h => h.id !== delId);
+      saveHistoryStorage();
+      renderHistory();
+      toast("Dokumen dihapus dari riwayat.");
+    }
+  }
+});
+
+// Filter tabs
+$("historyFilter")?.addEventListener("click", e => {
+  const btn = e.target.closest("button");
+  if (!btn || !btn.dataset.filter) return;
+  $("historyFilter").querySelectorAll("button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  currentHistoryFilter = btn.dataset.filter;
+  renderHistory();
+});
+
+// Export CSV / Excel
+$("exportHistoryBtn")?.addEventListener("click", () => {
+  if (HISTORY.length === 0) {
+    toast("Belum ada riwayat dokumen untuk diexport.");
+    return;
+  }
+
+  const headers = ["No", "Tanggal", "No Dokumen", "Jenis", "Nama Pelanggan/Pembayar", "Keterangan", "Total (Rp)"];
+  const rows = HISTORY.map((h, i) => [
+    i + 1,
+    h.date,
+    `"${(h.no || '').replace(/"/g, '""')}"`,
+    h.type.toUpperCase(),
+    `"${(h.buyer || '').replace(/"/g, '""')}"`,
+    `"${(h.desc || '').replace(/"/g, '""')}"`,
+    Math.round(h.total || 0)
+  ]);
+
+  const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `rekap-nota-kuitansi-${today()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast("📥 Rekapan berhasil diunduh (format Excel / CSV)!");
+});
+
+// Clear all history
+let clearArmed = false;
+$("clearHistoryBtn")?.addEventListener("click", e => {
+  if (HISTORY.length === 0) {
+    toast("Riwayat sudah kosong.");
+    return;
+  }
+  if (!clearArmed) {
+    clearArmed = true;
+    e.target.textContent = "Yakin? Klik lagi";
+    setTimeout(() => { clearArmed = false; e.target.textContent = "🗑️ Hapus Riwayat"; }, 3000);
+    return;
+  }
+  clearArmed = false;
+  e.target.textContent = "🗑️ Hapus Riwayat";
+  HISTORY = [];
+  saveHistoryStorage();
+  renderHistory();
+  toast("Semua riwayat dokumen telah dibersihkan.");
+});
+
+fillForm(); update(); renderHistory();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 
 /* ---------- mobile tab toggle ---------- */

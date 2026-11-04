@@ -18,6 +18,7 @@ Aplikasi web untuk membuat **Faktur**, **Kuitansi**, dan **Nota** secara instan 
 - **Upload Logo** — Tambahkan logo usaha pada dokumen
 - **Responsive** — Tampilan menyesuaikan di desktop maupun mobile
 - **Dark Mode** — Otomatis mengikuti preferensi sistem
+- **Rekap & Riwayat Otomatis** — Mencatat seluruh kuitansi, faktur, dan nota yang dibuat, lengkap dengan ringkasan statistik, filter, dan fitur Export ke Excel/CSV
 
 ## 🚀 Cara Pakai
 

@@ -96,12 +96,13 @@
       <section class="card">
         <div class="actions">
           <button type="button" class="btn primary" id="printBtn">🖨️ Cetak / Simpan PDF</button>
+          <button type="button" class="btn" id="saveHistoryBtn">💾 Simpan ke Rekap</button>
           <button type="button" class="btn" id="copyBtn">📋 Salin ringkasan</button>
           <button type="button" class="btn" id="nextBtn">📄 Dokumen baru</button>
           <button type="button" class="btn" id="resetBtn">🗑️ Kosongkan</button>
         </div>
         <p class="toast" id="toast" aria-live="polite"></p>
-        <p class="hint" id="printHint">Tips: Pada jendela cetak, pilih <b>"Simpan sebagai PDF" (Save as PDF)</b> untuk mengunduh dokumen langsung.</p>
+        <p class="hint" id="printHint">Tips: Dokumen yang dicetak otomatis tercatat ke <b>Rekap & Riwayat</b> di bawah.</p>
       </section>
     </form>
 
@@ -116,6 +117,65 @@
       <div id="stageWrap"><div class="stage" id="stage"></div></div>
     </section>
   </div>
+
+  <!-- Section Rekap & Riwayat Dokumen -->
+  <section class="card history-card" id="historySection">
+    <div class="history-head">
+      <div>
+        <h2 style="font-size:16px;color:var(--fg);text-transform:none;letter-spacing:normal;font-weight:700">📊 Rekap & Riwayat Dokumen</h2>
+        <p style="margin:4px 0 0;font-size:12.5px;color:var(--muted)">Daftar seluruh kuitansi, faktur, dan nota yang pernah Anda buat dan cetak.</p>
+      </div>
+      <div class="history-actions">
+        <button type="button" class="btn btn-sm" id="exportHistoryBtn">📥 Export CSV / Excel</button>
+        <button type="button" class="btn btn-sm" id="clearHistoryBtn" style="color:#C0392B">🗑️ Hapus Riwayat</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box">
+        <span class="stat-num" id="statTotalCount">0</span>
+        <span class="stat-lbl">Total Dokumen</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="statKwCount">0</span>
+        <span class="stat-lbl">Total Kuitansi</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="statNotaCount">0</span>
+        <span class="stat-lbl">Total Nota</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="statTotalNominal">Rp 0</span>
+        <span class="stat-lbl">Total Nilai Transaksi</span>
+      </div>
+    </div>
+
+    <div class="history-filter" id="historyFilter">
+      <button type="button" class="btn btn-sm active" data-filter="all">Semua</button>
+      <button type="button" class="btn btn-sm" data-filter="kuitansi">Kuitansi Saja</button>
+      <button type="button" class="btn btn-sm" data-filter="nota">Nota Saja</button>
+      <button type="button" class="btn btn-sm" data-filter="faktur">Faktur Saja</button>
+    </div>
+
+    <div class="table-wrap">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th style="width:40px">No</th>
+            <th style="width:110px">Tanggal</th>
+            <th style="width:150px">No. Dokumen</th>
+            <th style="width:90px">Jenis</th>
+            <th>Nama (Pelanggan / Pembayar)</th>
+            <th style="text-align:right;width:140px">Total (Rp)</th>
+            <th style="text-align:center;width:120px">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <!-- Rendered by JS -->
+        </tbody>
+      </table>
+    </div>
+  </section>
 </div>
 
 <script src="script.js"></script>
