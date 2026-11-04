@@ -68,13 +68,13 @@ input[type="number"]{font-family:var(--font-mono);font-size:13px}
 .stage{margin:0 auto;transform-origin:top left}
 
 /* ---------- PAPER ---------- */
-.paper{background:var(--paper);color:var(--ink);width:794px;min-height:1123px;padding:56px 60px;box-shadow:0 1px 2px rgba(0,0,0,.08),0 12px 40px rgba(0,0,0,.12);font-family:var(--font-body);font-size:13px;line-height:1.55;position:relative;display:flex;flex-direction:column;gap:28px}
+.paper{background:var(--paper);color:var(--ink);width:794px;min-height:1123px;padding:56px 60px;box-shadow:0 1px 2px rgba(0,0,0,.08),0 12px 40px rgba(0,0,0,.12);font-family:var(--font-body);font-size:13px;line-height:1.55;position:relative;display:flex;flex-direction:column;gap:28px;overflow:hidden;border-radius:8px}
 .paper.size-auto{min-height:0!important}
 .paper.size-full{min-height:1123px!important}
 
 .paper.kuitansi{
   width:680px;min-height:0!important;padding:26px 30px;gap:16px;
-  border:1.5px solid var(--rule);border-radius:10px;
+  border:1.5px solid var(--rule);border-radius:10px;overflow:hidden;
 }
 .paper.kuitansi .doc-title h3{font-size:28px}
 .paper.kuitansi .kw-body > div{padding:10px 0}
@@ -83,7 +83,7 @@ input[type="number"]{font-family:var(--font-mono);font-size:13px}
 
 .paper.nota{
   width:320px;min-height:0!important;padding:20px 18px;gap:14px;font-size:12px;
-  border:1px dashed var(--rule);border-radius:6px;
+  border:1px dashed var(--rule);border-radius:6px;overflow:hidden;
 }
 .num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 .p-head{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}
@@ -116,9 +116,12 @@ table.lines .c{text-align:center}
 .band{position:absolute;left:0;top:0;right:0;height:8px;background:var(--accent)}
 
 /* style variants */
-.paper.s-bold .p-head{background:var(--accent);color:#fff;margin:-56px -60px 0;padding:40px 60px 30px}
+.paper.s-bold .p-head{background:var(--accent);color:#fff}
+.paper:not(.kuitansi):not(.nota).s-bold .p-head{margin:-56px -60px 0;padding:40px 60px 28px}
+.paper.kuitansi.s-bold .p-head{margin:-26px -30px 0;padding:22px 30px 18px}
+.paper.nota.s-bold .p-head{margin:-20px -18px 0;padding:18px 18px 14px}
 .paper.s-bold .p-head .seller b,.paper.s-bold .doc-title h3{color:#fff}
-.paper.s-bold .p-head small,.paper.s-bold .doc-title .no{color:rgba(255,255,255,.82)}
+.paper.s-bold .p-head small,.paper.s-bold .doc-title .no{color:rgba(255,255,255,.88)}
 .paper.s-bold .mono-logo{background:#fff;color:var(--accent)}
 .paper.s-bold .band{display:none}
 .paper.s-minimal .band{display:none}
@@ -141,7 +144,6 @@ table.lines .c{text-align:center}
 .paper.nota .seller{flex-direction:column;align-items:center}
 .paper.nota .doc-title{text-align:center}
 .paper.nota .doc-title h3{font-size:24px}
-.paper.nota.s-bold .p-head{margin:-28px -26px 0;padding:24px 26px 18px}
 .nota-meta{display:flex;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--ink-soft);border-top:1px dashed var(--rule);border-bottom:1px dashed var(--rule);padding:8px 0}
 .nota-line{display:flex;flex-direction:column;padding:6px 0;border-bottom:1px dotted var(--rule)}
 .nota-line .d{font-weight:600}
@@ -193,7 +195,9 @@ table.lines .c{text-align:center}
   .paper .totals{width:100%}
   .paper .foot{flex-direction:column;gap:16px;align-items:stretch}
   .paper .sign{margin-top:10px}
-  .paper.s-bold .p-head{margin:-32px -28px 0;padding:28px 28px 22px}
+  .paper:not(.kuitansi):not(.nota).s-bold .p-head{margin:-32px -28px 0;padding:28px 28px 22px}
+  .paper.kuitansi.s-bold .p-head{margin:-26px -30px 0;padding:20px 24px 16px}
+  .paper.nota.s-bold .p-head{margin:-20px -18px 0;padding:16px 16px 12px}
 
   .kw-body{grid-template-columns:1fr;gap:0}
   .kw-amt{font-size:18px;padding:10px 16px}
@@ -252,6 +256,7 @@ table.lines .c{text-align:center}
     border:1.5px solid #aaa!important;border-radius:6px!important;
     page-break-inside:avoid!important
   }
+  .paper.kuitansi.s-bold .p-head{margin:-16px -20px 0!important;padding:14px 20px 12px!important}
   
   /* Nota Struk 80mm */
   .paper.nota{
@@ -260,6 +265,7 @@ table.lines .c{text-align:center}
     border:1px dashed #aaa!important;
     page-break-inside:avoid!important
   }
+  .paper.nota.s-bold .p-head{margin:-10px -8px 0!important;padding:8px 8px 6px!important}
   
   /* Faktur */
   .paper:not(.kuitansi):not(.nota){
