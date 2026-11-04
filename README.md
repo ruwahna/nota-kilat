@@ -2,6 +2,9 @@
 
 Aplikasi web untuk membuat **Faktur**, **Kuitansi**, dan **Nota** secara instan langsung di browser — tanpa perlu login, tanpa server, dan tanpa instalasi.
 
+🔗 **Demo:** [nota-kilat-8lg2.vercel.app](https://nota-kilat-8lg2.vercel.app)
+📦 **Repository:** [github.com/ruwahna/nota-kilat](https://github.com/ruwahna/nota-kilat)
+
 ## ✨ Fitur
 
 - **3 Jenis Dokumen** — Faktur, Kuitansi, dan Nota dalam satu aplikasi
