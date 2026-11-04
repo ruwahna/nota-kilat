@@ -24,7 +24,11 @@
   </header>
 
   <div class="grid">
-    <form class="form" id="f" autocomplete="off">
+    <div class="mobile-tabs" id="mobileTabs">
+      <button type="button" class="active" data-tab="form">📝 Formulir</button>
+      <button type="button" data-tab="preview">👁️ Pratinjau</button>
+    </div>
+    <form class="form mobile-visible" id="f" autocomplete="off">
       <section class="card">
         <h2>Tampilan</h2>
         <div class="swatches" id="swatches"></div>

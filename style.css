@@ -135,6 +135,62 @@ table.lines .c{text-align:center}
 .paper.nota .foot{flex-direction:column;align-items:center;text-align:center}
 .paper.nota .sign .line{margin-top:46px}
 
+/* ---------- MOBILE ---------- */
+/* Mobile tab switcher (form/preview toggle) */
+.mobile-tabs{display:none;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:12px}
+.mobile-tabs button{flex:1;border:0;background:transparent;color:var(--muted);font:600 14px var(--font-body);padding:10px 12px;border-radius:9px;cursor:pointer}
+.mobile-tabs button.active{background:var(--ui);color:var(--ui-ink)}
+
+@media (max-width:900px){
+  .mobile-tabs{display:flex}
+  .grid{grid-template-columns:1fr}
+  .grid .form,.grid .desk{display:none}
+  .grid .form.mobile-visible,.grid .desk.mobile-visible{display:flex}
+  .grid .desk.mobile-visible{display:block}
+  .desk{border-radius:12px;padding:12px}
+}
+
+@media (max-width:600px){
+  body{font-size:13px}
+  .wrap{padding-block:12px 24px}
+  .brand h1{font-size:22px}
+  .brand p{font-size:12.5px}
+  header.top{gap:10px;margin-bottom:12px}
+  .types button{padding:8px 12px;font-size:13px}
+  .card{padding:14px;gap:10px;border-radius:12px}
+  .card h2{font-size:11px}
+  input,textarea,select{font-size:13px;padding:8px}
+  .btn{padding:8px 12px;font-size:13px}
+  .swatches{gap:6px}
+  .sw{padding:4px 10px 4px 4px;font-size:12px;gap:6px}
+  .sw i{width:18px;height:18px}
+  .item{grid-template-columns:minmax(0,1fr) 90px 30px;gap:4px}
+  .actions{gap:6px}
+  .actions .btn{flex:1;text-align:center}
+  .desk-bar span{font-size:11px}
+
+  /* Paper scale adjustments for mobile preview */
+  .paper{font-size:11px;padding:32px 28px;gap:20px}
+  .paper .p-head{gap:12px}
+  .paper .seller b{font-size:14px}
+  .paper .doc-title h3{font-size:28px}
+  .paper .meta{grid-template-columns:1fr;gap:10px;padding:12px 14px}
+  .paper .totals{width:100%}
+  .paper .foot{flex-direction:column;gap:16px;align-items:stretch}
+  .paper .sign{margin-top:10px}
+  .paper.s-bold .p-head{margin:-32px -28px 0;padding:28px 28px 22px}
+
+  .kw-body{grid-template-columns:1fr;gap:0}
+  .kw-amt{font-size:18px;padding:10px 16px}
+}
+
+@media (max-width:380px){
+  .types{flex-wrap:wrap}
+  .types button{flex:1;text-align:center;padding:8px 8px;font-size:12px}
+  .row{grid-template-columns:1fr}
+  .mobile-tabs button{font-size:13px;padding:9px 8px}
+}
+
 @media print{
   @page{margin:0}
   body{background:#fff}

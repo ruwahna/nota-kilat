@@ -217,3 +217,24 @@ $("printBtn").addEventListener("click", () => window.print());
 fillForm(); update();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 
+/* ---------- mobile tab toggle ---------- */
+const mobileTabs = $("mobileTabs");
+if (mobileTabs) {
+  const formEl = document.querySelector(".form");
+  const deskEl = document.querySelector(".desk");
+  mobileTabs.addEventListener("click", e => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    mobileTabs.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    if (btn.dataset.tab === "form") {
+      formEl.classList.add("mobile-visible");
+      deskEl.classList.remove("mobile-visible");
+    } else {
+      formEl.classList.remove("mobile-visible");
+      deskEl.classList.add("mobile-visible");
+      setTimeout(fit, 50);
+    }
+  });
+}
+
