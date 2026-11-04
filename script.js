@@ -366,6 +366,36 @@ $("historyFilter")?.addEventListener("click", e => {
   renderHistory();
 });
 
+// 1-Klik Buka Langsung di Google Spreadsheet
+$("openInSheetsBtn")?.addEventListener("click", () => {
+  if (HISTORY.length === 0) {
+    toast("Belum ada riwayat dokumen untuk dibuka di Google Sheets.");
+    return;
+  }
+
+  // Format ke TSV (Tab Separated Values) agar langsung terbagi ke sel Google Sheets dengan rapi
+  const headers = ["No", "Tanggal", "No. Dokumen", "Jenis Dokumen", "Nama Pelanggan / Pembayar", "Keterangan / Keperluan", "Total Nominal (Rp)"];
+  const rows = HISTORY.map((h, i) => [
+    i + 1,
+    h.date || "-",
+    h.no || "-",
+    (h.type || "").toUpperCase(),
+    h.buyer || "-",
+    h.desc || "-",
+    Math.round(h.total || 0)
+  ]);
+
+  const tsv = [headers.join("\t"), ...rows.map(r => r.join("\t"))].join("\n");
+  
+  // Salin ke papan klip & buka Google Sheets baru
+  navigator.clipboard.writeText(tsv).then(() => {
+    window.open("https://sheets.new", "_blank");
+    toast("🚀 Google Sheets terbuka! Tekan Ctrl+V di sheet untuk menempelkan seluruh tabel.");
+  }).catch(() => {
+    window.open("https://sheets.new", "_blank");
+  });
+});
+
 // Export Excel Spreadsheet (.xlsx)
 $("exportHistoryBtn")?.addEventListener("click", () => {
   if (HISTORY.length === 0) {
