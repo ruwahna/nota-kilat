@@ -272,6 +272,15 @@ function saveToHistory(silent = false) {
 
   saveHistoryStorage();
   renderHistory();
+  // Kirim otomatis ke Google Spreadsheet jika URL sudah terhubung
+  sendToGoogleSheets({
+    date: record.date,
+    no: record.no,
+    type: record.type,
+    buyer: record.buyer,
+    desc: record.desc,
+    total: record.total
+  });
   if (!silent) toast("✅ Dokumen berhasil dicatat ke Rekap & Riwayat!");
 }
 
@@ -445,7 +454,84 @@ $("clearHistoryBtn")?.addEventListener("click", e => {
   toast("Semua riwayat dokumen telah dibersihkan.");
 });
 
-fillForm(); update(); renderHistory();
+/* ---------- GOOGLE SPREADSHEET INTEGRATION ---------- */
+let SHEETS_URL = localStorage.getItem("notakilat_sheets_url") || "";
+
+function updateSheetsUI() {
+  const badge = $("sheetsStatusBadge");
+  const input = $("sheetsWebhookUrl");
+  if (input) input.value = SHEETS_URL;
+  if (badge) {
+    if (SHEETS_URL && SHEETS_URL.startsWith("http")) {
+      badge.textContent = "✅ Terhubung ke Google Sheets";
+      badge.className = "badge badge-faktur";
+    } else {
+      badge.textContent = "Belum Terhubung";
+      badge.className = "badge badge-kuitansi";
+    }
+  }
+}
+
+function sendToGoogleSheets(dataPayload) {
+  if (!SHEETS_URL || !SHEETS_URL.startsWith("http")) return;
+  try {
+    fetch(SHEETS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dataPayload)
+    }).catch(() => {});
+  } catch(e) {}
+}
+
+$("saveSheetsUrlBtn")?.addEventListener("click", () => {
+  const val = $("sheetsWebhookUrl")?.value.trim() || "";
+  SHEETS_URL = val;
+  localStorage.setItem("notakilat_sheets_url", SHEETS_URL);
+  updateSheetsUI();
+  if (SHEETS_URL) {
+    toast("✅ URL Google Spreadsheet tersimpan! Dokumen akan otomatis terkirim.");
+  } else {
+    toast("Koneksi Google Spreadsheet dinonaktifkan.");
+  }
+});
+
+$("toggleSheetsHelpBtn")?.addEventListener("click", () => {
+  const el = $("sheetsHelp");
+  if (el) el.hidden = !el.hidden;
+});
+
+$("copyScriptBtn")?.addEventListener("click", () => {
+  const code = $("appsScriptCode")?.textContent || "";
+  navigator.clipboard.writeText(code).then(() => {
+    toast("📋 Kode Apps Script disalin! Tempel di menu Ekstensi > Apps Script.");
+  });
+});
+
+$("syncAllSheetsBtn")?.addEventListener("click", () => {
+  if (!SHEETS_URL || !SHEETS_URL.startsWith("http")) {
+    toast("⚠️ Harap tempel & simpan URL Webhook Google Sheets terlebih dahulu.");
+    const el = $("sheetsHelp");
+    if (el) el.hidden = false;
+    return;
+  }
+  if (HISTORY.length === 0) {
+    toast("Belum ada data rekapan untuk dikirim.");
+    return;
+  }
+  const payload = HISTORY.map(h => ({
+    date: h.date,
+    no: h.no,
+    type: h.type,
+    buyer: h.buyer,
+    desc: h.desc,
+    total: h.total
+  }));
+  sendToGoogleSheets(payload);
+  toast(`📤 Mengirim ${payload.length} data ke Google Spreadsheet Anda!`);
+});
+
+fillForm(); update(); renderHistory(); updateSheetsUI();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 
 /* ---------- mobile tab toggle ---------- */

@@ -19,6 +19,7 @@ Aplikasi web untuk membuat **Faktur**, **Kuitansi**, dan **Nota** secara instan 
 - **Responsive** — Tampilan menyesuaikan di desktop maupun mobile
 - **Dark Mode** — Otomatis mengikuti preferensi sistem
 - **Rekap & Riwayat Otomatis** — Mencatat seluruh kuitansi, faktur, dan nota yang dibuat, lengkap dengan ringkasan statistik, filter, dan fitur Export ke Excel/CSV
+- **Integrasi Google Spreadsheet** — Otomatis tersambung dan mencatat transaksi ke Google Sheets akun Anda sendiri secara real-time
 
 ## 🚀 Cara Pakai
 
