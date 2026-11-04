@@ -158,8 +158,7 @@ function renderKuitansi(c){
     <div class="k">Untuk pembayaran</div><div class="v">${esc(S.purpose||"-")}</div>
     <div class="k">Metode</div><div class="v">${esc(S.method)}</div>
   </div>
-  <div class="foot"><div><div class="kw-amt num"><span>Rp</span>${Math.round(c.total).toLocaleString("id-ID")},-</div>${S.notes?`<div class="notes" style="margin-top:14px">${esc(S.notes)}</div>`:""}</div>${signHTML()}</div>
-  <div class="cut-guide"><span>✂</span> - - - - - - - - - - - - - - - - - - - - - - Gunting / Sobek di sini - - - - - - - - - - - - - - - - - - - - - - <span>✂</span></div>`;
+  <div class="foot"><div><div class="kw-amt num"><span>Rp</span>${Math.round(c.total).toLocaleString("id-ID")},-</div>${S.notes?`<div class="notes" style="margin-top:14px">${esc(S.notes)}</div>`:""}</div>${signHTML()}</div>`;
 }
 
 function renderNota(c){
@@ -173,8 +172,7 @@ function renderNota(c){
     <div class="grand"><span>Total</span><span>${rp(c.total)}</span></div>
   </div>
   <div class="words" style="font-size:11.5px">${terbilang(c.total)}</div>
-  <div class="foot">${S.notes?`<div class="notes">${esc(S.notes)}</div>`:""}${signHTML()}</div>
-  <div class="cut-guide"><span>✂</span> - - - - - - - - - - Sobek di sini - - - - - - - - - - <span>✂</span></div>`;
+  <div class="foot">${S.notes?`<div class="notes">${esc(S.notes)}</div>`:""}${signHTML()}</div>`;
 }
 
 function update(){
