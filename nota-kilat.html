@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nota Kilat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Nota Kilat</h1>
+      <p>Isi formulir, dokumen langsung jadi di sebelah kanan.</p>
+    </div>
+    <div class="types" role="group" aria-label="Jenis dokumen">
+      <button type="button" data-type="faktur" aria-pressed="true">Faktur</button>
+      <button type="button" data-type="kuitansi" aria-pressed="false">Kuitansi</button>
+      <button type="button" data-type="nota" aria-pressed="false">Nota</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <form class="form" id="f" autocomplete="off">
+      <section class="card">
+        <h2>Tampilan</h2>
+        <div class="swatches" id="swatches"></div>
+        <div class="styles" role="group" aria-label="Gaya dokumen" id="styles">
+          <button type="button" class="btn" data-style="classic">Klasik</button>
+          <button type="button" class="btn" data-style="bold">Tegas</button>
+          <button type="button" class="btn" data-style="minimal">Minimalis</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Penerbit (usaha Anda)</h2>
+        <label>Nama usaha<input id="sName"></label>
+        <label>Alamat<textarea id="sAddr" rows="2"></textarea></label>
+        <div class="row">
+          <label>Telepon / WA<input id="sPhone"></label>
+          <label>Email<input id="sEmail" type="email"></label>
+        </div>
+        <label>Logo (opsional)<input id="sLogo" type="file" accept="image/*"></label>
+      </section>
+
+      <section class="card">
+        <h2 id="buyerTitle">Ditagihkan kepada</h2>
+        <label><span id="bNameLbl">Nama pelanggan</span><input id="bName"></label>
+        <label data-for="faktur nota">Alamat / keterangan<textarea id="bAddr" rows="2"></textarea></label>
+      </section>
+
+      <section class="card">
+        <h2>Detail dokumen</h2>
+        <div class="row">
+          <label>Nomor<input id="no"></label>
+          <label>Tanggal<input id="date" type="date"></label>
+        </div>
+        <div class="row" data-for="faktur">
+          <label>Jatuh tempo<input id="due" type="date"></label>
+          <label>Kota<input id="city"></label>
+        </div>
+        <label data-for="kuitansi nota">Kota<input id="city2"></label>
+      </section>
+
+      <section class="card" data-for="faktur nota">
+        <h2>Rincian barang / jasa</h2>
+        <div class="items" id="items"></div>
+        <button type="button" class="btn" id="addItem">+ Tambah baris</button>
+        <div class="row">
+          <label>Diskon (Rp)<input id="disc" type="number" min="0" step="1000"></label>
+          <label data-for="faktur">PPN (%)<input id="tax" type="number" min="0" max="100" step="0.5"></label>
+        </div>
+      </section>
+
+      <section class="card" data-for="kuitansi">
+        <h2>Pembayaran</h2>
+        <label>Jumlah uang (Rp)<input id="amount" type="number" min="0" step="1000"></label>
+        <label>Untuk pembayaran<textarea id="purpose" rows="2"></textarea></label>
+        <label>Metode<select id="method"><option>Tunai</option><option>Transfer bank</option><option>QRIS</option><option>Cek / Giro</option></select></label>
+      </section>
+
+      <section class="card">
+        <h2>Penutup</h2>
+        <label data-for="faktur">Info rekening pembayaran<textarea id="bank" rows="2"></textarea></label>
+        <label>Catatan<textarea id="notes" rows="2"></textarea></label>
+        <label>Nama penanda tangan<input id="signer"></label>
+      </section>
+
+      <section class="card">
+        <div class="actions">
+          <button type="button" class="btn primary" id="printBtn" hidden>Cetak / Simpan PDF</button>
+          <button type="button" class="btn" id="copyBtn">Salin ringkasan</button>
+          <button type="button" class="btn" id="nextBtn">Dokumen baru</button>
+          <button type="button" class="btn" id="resetBtn">Kosongkan</button>
+        </div>
+        <p class="toast" id="toast" aria-live="polite"></p>
+        <p class="hint" id="printHint">Isian tersimpan otomatis di browser ini. Untuk mencetak atau menyimpan PDF, unduh file HTML dari percakapan lalu buka di browser, tombol "Cetak / Simpan PDF" akan muncul.</p>
+      </section>
+    </form>
+
+    <section class="desk" aria-label="Pratinjau dokumen">
+      <div class="desk-bar"><span id="paperLabel">Pratinjau · A4</span><span class="num" id="totalLabel"></span></div>
+      <div id="stageWrap"><div class="stage" id="stage"></div></div>
+    </section>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
