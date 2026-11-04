@@ -357,35 +357,71 @@ $("historyFilter")?.addEventListener("click", e => {
   renderHistory();
 });
 
-// Export CSV / Excel
+// Export Excel Spreadsheet (.xlsx)
 $("exportHistoryBtn")?.addEventListener("click", () => {
   if (HISTORY.length === 0) {
     toast("Belum ada riwayat dokumen untuk diexport.");
     return;
   }
 
-  const headers = ["No", "Tanggal", "No Dokumen", "Jenis", "Nama Pelanggan/Pembayar", "Keterangan", "Total (Rp)"];
-  const rows = HISTORY.map((h, i) => [
-    i + 1,
-    h.date,
-    `"${(h.no || '').replace(/"/g, '""')}"`,
-    h.type.toUpperCase(),
-    `"${(h.buyer || '').replace(/"/g, '""')}"`,
-    `"${(h.desc || '').replace(/"/g, '""')}"`,
-    Math.round(h.total || 0)
-  ]);
+  // Format data tabel untuk Excel
+  const data = HISTORY.map((h, i) => ({
+    "No": i + 1,
+    "Tanggal": h.date || "-",
+    "No. Dokumen": h.no || "-",
+    "Jenis Dokumen": (h.type || "").toUpperCase(),
+    "Nama Pelanggan / Pembayar": h.buyer || "-",
+    "Keterangan / Keperluan": h.desc || "-",
+    "Total Nominal (Rp)": Number(h.total) || 0
+  }));
 
-  const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n");
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `rekap-nota-kuitansi-${today()}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  toast("📥 Rekapan berhasil diunduh (format Excel / CSV)!");
+  // Jika library SheetJS tersedia, buat file .xlsx asli
+  if (window.XLSX) {
+    const ws = XLSX.utils.json_to_sheet(data);
+    
+    // Atur lebar kolom agar rapi dan tidak terpotong di Excel
+    ws['!cols'] = [
+      { wch: 6 },  // No
+      { wch: 14 }, // Tanggal
+      { wch: 22 }, // No. Dokumen
+      { wch: 15 }, // Jenis Dokumen
+      { wch: 28 }, // Nama Pelanggan / Pembayar
+      { wch: 38 }, // Keterangan / Keperluan
+      { wch: 20 }  // Total Nominal
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Rekap Dokumen");
+    XLSX.writeFile(wb, `Rekap_Nota_Kuitansi_${today()}.xlsx`);
+    toast("📊 Berhasil mengunduh spreadsheet Excel (.xlsx)!");
+  } else {
+    // Fallback: Excel HTML Spreadsheet (.xls)
+    let tableHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+    <head><meta charset="utf-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Rekap Dokumen</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>
+    <body>
+    <table border="1">
+      <thead>
+        <tr style="background:#0F766E;color:#FFFFFF;font-weight:bold;height:32px">
+          <th>No</th><th>Tanggal</th><th>No. Dokumen</th><th>Jenis Dokumen</th><th>Nama Pelanggan / Pembayar</th><th>Keterangan / Keperluan</th><th>Total Nominal (Rp)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${data.map(d => `<tr><td align="center">${d["No"]}</td><td>${d["Tanggal"]}</td><td>${d["No. Dokumen"]}</td><td>${d["Jenis Dokumen"]}</td><td>${d["Nama Pelanggan / Pembayar"]}</td><td>${d["Keterangan / Keperluan"]}</td><td align="right">${d["Total Nominal (Rp)"]}</td></tr>`).join("")}
+      </tbody>
+    </table>
+    </body></html>`;
+    
+    const blob = new Blob([tableHtml], { type: "application/vnd.ms-excel;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Rekap_Nota_Kuitansi_${today()}.xls`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast("📊 Berhasil mengunduh spreadsheet Excel (.xls)!");
+  }
 });
 
 // Clear all history
