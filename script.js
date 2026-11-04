@@ -102,17 +102,25 @@ function syncChrome(){
   document.querySelectorAll(".types button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.type===S.type));
   document.querySelectorAll(".sw").forEach(b=>b.setAttribute("aria-pressed", b.dataset.themeId===S.theme));
   document.querySelectorAll("[data-style]").forEach(b=>b.classList.toggle("primary", b.dataset.style===S.style));
-  document.querySelectorAll("[data-for]").forEach(el=>el.hidden = !el.dataset.for.split(" ").includes(S.type));
-  $("buyerTitle").textContent = S.type==="kuitansi" ? "Diterima dari" : S.type==="nota" ? "Pembeli" : "Ditagihkan kepada";
-  $("bNameLbl").textContent = S.type==="kuitansi" ? "Nama pembayar" : "Nama pelanggan";
-  $("paperLabel").textContent = "Pratinjau · " + (S.type==="nota" ? "Nota 80 mm" : S.type==="kuitansi" ? "Kuitansi" : "A4");
+  
+  // Tampilkan hanya field yang relevan untuk tipe aktif
+  document.querySelectorAll("[data-for]").forEach(el=>{
+    const types = el.dataset.for.split(" ");
+    el.hidden = !types.includes(S.type);
+  });
+
+  if ($("buyerTitle")) $("buyerTitle").textContent = S.type==="kuitansi" ? "Diterima dari" : S.type==="nota" ? "Data Pembeli" : "Ditagihkan kepada";
+  if ($("bNameLbl")) $("bNameLbl").textContent = S.type==="kuitansi" ? "Nama pembayar" : S.type==="nota" ? "Nama pembeli (opsional)" : "Nama pelanggan / perusahaan";
+  if ($("signerLbl")) $("signerLbl").textContent = S.type==="kuitansi" ? "Nama penerima uang" : S.type==="nota" ? "Kasir / Hormat kami" : "Nama penanda tangan";
+  if ($("closeTitle")) $("closeTitle").textContent = S.type==="faktur" ? "Penutup & Rekening" : S.type==="kuitansi" ? "Penerima & Catatan" : "Catatan & Kasir";
+  $("paperLabel").textContent = "Pratinjau · " + (S.type==="nota" ? "Nota 80 mm" : S.type==="kuitansi" ? "Kuitansi A4" : "Faktur A4");
 }
 
 /* ---------- document render ---------- */
 function headHTML(title){
   const initials = (S.sName||"?").replace(/^contoh:\s*/i,"").split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join("").toUpperCase();
   const logo = S.sLogo ? `<img class="logo" src="${S.sLogo}" alt="">` : `<div class="mono-logo">${esc(initials||"?")}</div>`;
-  const contact = [S.sAddr, [S.sPhone,S.sEmail].filter(Boolean).join(" · ")].filter(Boolean).join("\n");
+  const contact = [S.sAddr, [S.sPhone, (S.type!=="nota"?S.sEmail:"")].filter(Boolean).join(" · ")].filter(Boolean).join("\n");
   return `<div class="p-head">
     <div class="seller">${logo}<div><b>${esc(S.sName||"Nama usaha")}</b><small>${esc(contact)}</small></div></div>
     <div class="doc-title"><h3>${title}</h3><div class="no num">No. ${esc(S.no||"-")}</div></div></div>`;
@@ -209,10 +217,14 @@ $("resetBtn").addEventListener("click", e => {
   fillForm(); update(); toast("Semua isian dikosongkan.");
 });
 
-/* Print works only when opened as a standalone file, not inside the embedded viewer */
-let topLevel=false; try { topLevel = window.self === window.top; } catch(e) {}
-if (topLevel) { $("printBtn").hidden=false; $("printHint").textContent="Isian tersimpan otomatis di browser ini. Saat mencetak, pilih \"Simpan sebagai PDF\" untuk file PDF."; }
-$("printBtn").addEventListener("click", () => window.print());
+/* Print action */
+function doPrint() {
+  window.print();
+}
+const p1 = $("printBtn");
+if (p1) p1.addEventListener("click", doPrint);
+const p2 = $("printBtn2");
+if (p2) p2.addEventListener("click", doPrint);
 
 fillForm(); update();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);

@@ -45,7 +45,7 @@
         <label>Alamat<textarea id="sAddr" rows="2"></textarea></label>
         <div class="row">
           <label>Telepon / WA<input id="sPhone"></label>
-          <label>Email<input id="sEmail" type="email"></label>
+          <label data-for="faktur kuitansi">Email<input id="sEmail" type="email"></label>
         </div>
         <label>Logo (opsional)<input id="sLogo" type="file" accept="image/*"></label>
       </section>
@@ -53,7 +53,7 @@
       <section class="card">
         <h2 id="buyerTitle">Ditagihkan kepada</h2>
         <label><span id="bNameLbl">Nama pelanggan</span><input id="bName"></label>
-        <label data-for="faktur nota">Alamat / keterangan<textarea id="bAddr" rows="2"></textarea></label>
+        <label data-for="faktur">Alamat / keterangan<textarea id="bAddr" rows="2"></textarea></label>
       </section>
 
       <section class="card">
@@ -87,26 +87,32 @@
       </section>
 
       <section class="card">
-        <h2>Penutup</h2>
+        <h2 id="closeTitle">Penutup</h2>
         <label data-for="faktur">Info rekening pembayaran<textarea id="bank" rows="2"></textarea></label>
-        <label>Catatan<textarea id="notes" rows="2"></textarea></label>
-        <label>Nama penanda tangan<input id="signer"></label>
+        <label>Catatan<textarea id="notes" rows="2" placeholder="Contoh: Terima kasih atas kunjungannya"></textarea></label>
+        <label><span id="signerLbl">Nama penanda tangan</span><input id="signer"></label>
       </section>
 
       <section class="card">
         <div class="actions">
-          <button type="button" class="btn primary" id="printBtn" hidden>Cetak / Simpan PDF</button>
-          <button type="button" class="btn" id="copyBtn">Salin ringkasan</button>
-          <button type="button" class="btn" id="nextBtn">Dokumen baru</button>
-          <button type="button" class="btn" id="resetBtn">Kosongkan</button>
+          <button type="button" class="btn primary" id="printBtn">🖨️ Cetak / Simpan PDF</button>
+          <button type="button" class="btn" id="copyBtn">📋 Salin ringkasan</button>
+          <button type="button" class="btn" id="nextBtn">📄 Dokumen baru</button>
+          <button type="button" class="btn" id="resetBtn">🗑️ Kosongkan</button>
         </div>
         <p class="toast" id="toast" aria-live="polite"></p>
-        <p class="hint" id="printHint">Isian tersimpan otomatis di browser ini. Untuk mencetak atau menyimpan PDF, unduh file HTML dari percakapan lalu buka di browser, tombol "Cetak / Simpan PDF" akan muncul.</p>
+        <p class="hint" id="printHint">Tips: Pada jendela cetak, pilih <b>"Simpan sebagai PDF" (Save as PDF)</b> untuk mengunduh dokumen langsung.</p>
       </section>
     </form>
 
     <section class="desk" aria-label="Pratinjau dokumen">
-      <div class="desk-bar"><span id="paperLabel">Pratinjau · A4</span><span class="num" id="totalLabel"></span></div>
+      <div class="desk-bar">
+        <span id="paperLabel">Pratinjau · A4</span>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="num" id="totalLabel"></span>
+          <button type="button" class="btn primary btn-sm" id="printBtn2">🖨️ Cetak PDF</button>
+        </div>
+      </div>
       <div id="stageWrap"><div class="stage" id="stage"></div></div>
     </section>
   </div>
